@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_DATABASE=mydb
+    ports:
+      - "27017:27017"
+    volumes:
+      - /home/oo7/newapp:/data/db
+    networks:
+      - net-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    env_file:
+      - .env
+    ports:
+      - "7000:7000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - net-net
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('net').connect(7000).on('connect', ()=>process.exit(0)).on('error', ()=>process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+networks:
+  net-net:
+    name: net-net

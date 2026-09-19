@@ -1,0 +1,25 @@
+node_modules
+dist
+.vscode
+.git
+.gitignore
+Dockerfile
+nginx.conf
+.env
+.env.*
+*.local
+npm-debug.log
+yarn-error.log
+.pnp.*
+
+# Local envs and secrets
+.env.local
+.env.development
+.env.production
+
+# vite specific
+dist
+
+# OS files
+.DS_Store
+Thumbs.db
