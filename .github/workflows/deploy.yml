@@ -47,7 +47,7 @@ jobs:
             docker stop mern-app || true
             docker rm mern-app|| true
             docker pull ${{secrets.dockerusername}}/mern-app:latest
-            docker run -d -p 7000:7000 --network app-network -e MONGODB_CONNECTION_STRING=mongodb://mongo:27017/mydb -e JWT_SECRET_KEY=dfsdsdfff ${{secrets.dockerusername}}/mern-app:latest    
+            docker run -d -p 7000:7000 --name mern-app --network app-network -e MONGODB_CONNECTION_STRING=mongodb://mongo:27017/mydb -e JWT_SECRET_KEY=dfsdsdfff ${{secrets.dockerusername}}/mern-app:latest    
 
             docker image prune -f 
 
