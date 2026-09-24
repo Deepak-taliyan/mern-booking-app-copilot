@@ -41,7 +41,7 @@ jobs:
             docker rm mongo || true
             docker pull mongo:8.0
             docker network inspect app-network >/dev/null 2>/dev/null || docker network create app-network
-            docker run -d --network app-network -e MONGO_INITDB_DATABASE=mydb --name mongo mongo
+          docker run -d --network app-network -e MONGO_INITDB_DATABASE=mydb --name mongo mongo:8.0
             
             docker stop mern-app || true
             docker rm mern-app|| true
