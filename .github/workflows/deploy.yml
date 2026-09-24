@@ -1,0 +1,53 @@
+name: mern
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  simple:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout first
+        uses: actions/checkout@v7
+
+      - name: setup node
+        uses: actions/setup-node@v6.5.0
+        with:
+          node-version: 22
+
+      - name: building docker image
+        run:  docker build -t ${{secrets.dockerusername}}/mern-app:latest .
+
+      - name: login to docker-hub
+        uses: docker/login-action@v4.6.0
+        with:
+          username: ${{secrets.dockerusername}}
+          password: ${{secrets.dockerpassword}}
+
+      - name: push to docker hub
+        run: docker push ${{secrets.dockerusername}}/mern-app:latest
+
+      - name : ssh to ec2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{secrets.ec2publicip}}
+          username: ubuntu
+          password: ${{secrets.ec2key-pem}}
+          script: |
+            mkdir -p mern-app
+
+            docker stop mongo || true
+            docker rm mongo || true
+            docker pull mongo:latest
+            docker network inspect app-network >/dev/null 2>/dev/null || docker network create app-network
+            docker run -d --network app-network -e MONGO_INITDB_DATABASE=mydb --name mongo mongo:latest
+            
+            docker stop mern-app:latest || true
+            docker rm mern-app:latest || true
+            docker pull ${{secrets.dockerusername}}/mern-app:latest
+            docker run -d 7000:7000 --network app-network -e MONGODB_CONNECTION_STRING=mongodb://mongo:27017/mydb -e JWT_SECRET_KEY=dfsdsdfff ${{secrets.dockerusername}}/mern-app:latest    
+
+            docker image prune -f 
+
+
