@@ -33,7 +33,7 @@ jobs:
         with:
           host: ${{secrets.ec2publicip}}
           username: ubuntu
-          password: ${{secrets.ec2key-pem}}
+          password: ${{secrets.secretkeypem}}
           script: |
             mkdir -p mern-app
 
