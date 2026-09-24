@@ -16,8 +16,9 @@ jobs:
         with:
           node-version: 22
 
+
       - name: building docker image
-        run:  docker build -t ${{secrets.dockerusername}}/mern-app:latest .
+        run:  docker build  --no-cache -t ${{secrets.dockerusername}}/mern-app:latest .
 
       - name: login to docker-hub
         uses: docker/login-action@v4.6.0
